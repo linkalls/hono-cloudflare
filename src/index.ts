@@ -2,6 +2,7 @@ import { signJWT } from "@cross/jwt";
 import { Hono } from "hono";
 import { privatekey } from "./shared/jwt";
 import { userApp } from "./users/index";
+import {cors} from "hono/cors";
 
 interface User {
   username: string;
@@ -28,6 +29,15 @@ async function verifyPassword(
 export { hashPassword, verifyPassword };
 
 const app = new Hono();
+app.use(cors(
+  {
+    origin: "*", // 許可する Origin (ここではすべての Origin を許可)
+    maxAge: 60 * 60, // 1時間間クッキーを有効化
+   allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // 許可するメソッド
+    allowHeaders: ["Content-Type", "Authorization"], // 許可するヘッダー
+    credentials: true, // Cookie をリクエストに含める
+  }
+));
 
 // サインアップ
 app.post("/signup", async (c) => {
